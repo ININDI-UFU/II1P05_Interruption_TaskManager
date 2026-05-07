@@ -1,6 +1,16 @@
 // https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/freertos.html
 #include "IIKit.h"
-#include "util/dinDebounce.h"
+
+// ---------- Parâmetros das tasks (passados via pvParameters) ----------
+
+struct BlinkParams {
+    uint8_t  pin;      // Pino do LED
+    uint32_t delayMs;  // Período do pisca em milissegundos
+};
+
+struct InputParams {
+    uint32_t delayMs;  // Período de leitura em milissegundos
+};
 
 // ---------- Funções auxiliares ----------
 
@@ -13,48 +23,43 @@ void blinkLEDFunc(uint8_t pin) {
 void managerInputFunc(void) {
     const uint16_t vlPOT1 = IIKit.analogReadPot1();
     const uint16_t vlPOT2 = IIKit.analogReadPot2();
-    IIKit.disp.setText(2, ("P1:" + String(vlPOT1)).c_str());
-    IIKit.disp.setText(3, ("P2:" + String(vlPOT2)).c_str());
     wserial::plot("vlPOT1", vlPOT1);
     wserial::plot("vlPOT2", vlPOT2);
 }
 
 // ---------- Tasks FreeRTOS ----------
 
-// Task: pisca LED D1 a cada 500 ms
-void taskBlinkD1(void* pvParameters) {
+// Task genérica de pisca-LED: recebe pino e período via pvParameters
+void taskBlink(void* pvParameters) {
+    const BlinkParams* params = static_cast<BlinkParams*>(pvParameters);
     for (;;) {
-        blinkLEDFunc(def_pin_D1);
-        vTaskDelay(pdMS_TO_TICKS(500));
+        blinkLEDFunc(params->pin);
+        vTaskDelay(pdMS_TO_TICKS(params->delayMs));
     }
 }
 
-// Task: pisca LED D2 a cada 1000 ms
-void taskBlinkD2(void* pvParameters) {
-    for (;;) {
-        blinkLEDFunc(def_pin_D2);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
-}
-
-// Task: lê entradas analógicas a cada 50 ms
+// Task de leitura analógica: recebe período via pvParameters
 void taskManagerInput(void* pvParameters) {
+    const InputParams* params = static_cast<InputParams*>(pvParameters);
     for (;;) {
         managerInputFunc();
-        vTaskDelay(pdMS_TO_TICKS(50));
+        vTaskDelay(pdMS_TO_TICKS(params->delayMs));
     }
 }
 
 // ---------- Setup ----------
 void setup() {
     IIKit.setup();
-    // Cria as tasks no núcleo 1 (núcleo do Arduino por padrão)
-    xTaskCreatePinnedToCore(taskBlinkD1,      "BlinkD1",    2048, nullptr, 1, nullptr, 1);
-    xTaskCreatePinnedToCore(taskBlinkD2,      "BlinkD2",    2048, nullptr, 1, nullptr, 1);
-    xTaskCreatePinnedToCore(taskManagerInput, "ManagerPOT", 4096, nullptr, 1, nullptr, 1);
+    // Cria as tasks no núcleo 1, passando os parâmetros via pvParameters
+    static BlinkParams paramsD1    = { def_pin_D1,  500  };
+    xTaskCreatePinnedToCore(taskBlink,        "BlinkD1",    2048, &paramsD1,    1, nullptr, 1);
+    static BlinkParams paramsD2    = { def_pin_D2,  1000 };    
+    xTaskCreatePinnedToCore(taskBlink,        "BlinkD2",    2048, &paramsD2,    1, nullptr, 1);
+    static InputParams paramsInput = { 50 };    
+    xTaskCreatePinnedToCore(taskManagerInput, "ManagerPOT", 4096, &paramsInput, 1, nullptr, 1);
 }
 
 // ---------- Loop principal ----------
 void loop() {
-    IIKit.loop();         // Monitora os periféricos do kit
+    IIKit.loop(); // Monitora os periféricos do kit
 }
