@@ -19,15 +19,8 @@ void managerInputFunc(void) {
     wserial::plot("vlPOT2", vlPOT2);
 }
 
-DigitalINDebounce RTN1(def_pin_RTN1, 50, [](bool state){digitalWrite(def_pin_D3, state);});
-DigitalINDebounce RTN2(def_pin_RTN2, 50, [](bool state){digitalWrite(def_pin_D4, state);});
-//DigitalINDebounce PUSH1(def_pin_PUSH1, 50, [](bool state){digitalWrite(def_pin_D3, state);});
-//DigitalINDebounce PUSH2(def_pin_PUSH2, 50, [](bool state){digitalWrite(def_pin_D4, state);});
-
 //Configuração inicial do programa
 void setup() {
-    //Faz as configuções do hardware ESP + Perifericos
-    IIKit.setup();
     jtaskAttachFunc(managerInputFunc, 50000UL); //anexa um função e sua base de tempo para ser executada
     jtaskAttachFunc([](){blinkLEDFunc(def_pin_D1);}, 500000UL);  //anexa um função e sua base de tempo para ser executada
     jtaskAttachFunc([](){blinkLEDFunc(def_pin_D2);}, 1000000UL);  //anexa um função e sua base de tempo para ser executada
@@ -36,10 +29,5 @@ void setup() {
 //Loop principal
 void loop() {
   //Monitora os perifericos
-  IIKit.loop();
-  jtaskLoop();
-  RTN1.update();  // Atualiza a leitura com debounce
-  RTN2.update();  // Atualiza a leitura com debounce 
-  //PUSH1.update();  // Atualiza a leitura com debounce
-  //PUSH2.update();  // Atualiza a leitura com debounce   
+  jtaskLoop();  
 }
