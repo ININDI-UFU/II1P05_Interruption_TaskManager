@@ -69,5 +69,5 @@ public:
     }    
 };
 
-ADS1115_c ads1115; ///< Instância global do ADC ADS1115.
+ADS1115 ads1115; ///< Instância global do ADC ADS1115.
 #endif 

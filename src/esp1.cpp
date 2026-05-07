@@ -4,9 +4,10 @@
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
 
-constexpr uint8_t def_pin_ADC1 = 36;
-constexpr uint8_t def_pin_ADC2 = 39;
-constexpr uint8_t def_pin_D1 = 2;
+constexpr uint8_t def_pin_D1 = 23;
+constexpr uint8_t def_pin_D2 = 19;
+constexpr uint8_t def_pin_SCL = 22;     ///< GPIO para SCL do display OLED.
+constexpr uint8_t def_pin_SDA = 21;     ///< GPIO para SDA do display OLED.
 
 // ---------- Flags setadas pela ISR do timer ----------
 // volatile: impede que o compilador otimize o acesso a essas variáveis
@@ -42,6 +43,7 @@ void IRAM_ATTR onTimer() {
 
 // ---------- Setup ----------
 void setup() {
+    disp.start(def_pin_SDA, def_pin_SCL);    
     timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
     timerAttachInterrupt(timer, &onTimer);
     timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
@@ -49,6 +51,7 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
+    disp.update();    
     // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {
         flagInput = false;

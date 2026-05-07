@@ -7,10 +7,10 @@
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
 
-constexpr uint8_t def_pin_ADC1 = 36;
-constexpr uint8_t def_pin_ADC2 = 39;
-constexpr uint8_t def_pin_D1 = 2;
-constexpr uint8_t def_pin_D2 = 4;
+constexpr uint8_t def_pin_D1 = 23;
+constexpr uint8_t def_pin_D2 = 19;
+constexpr uint8_t def_pin_SCL = 22;     ///< GPIO para SCL do display OLED.
+constexpr uint8_t def_pin_SDA = 21;     ///< GPIO para SDA do display OLED.
 
 //Funçao de alterar o estado de um led
 void blinkLEDFunc(uint8_t pin) {
@@ -28,6 +28,7 @@ void managerInputFunc(void) {
 
 //Configuração inicial do programa
 void setup() {
+    disp.start(def_pin_SDA, def_pin_SCL);    
     jtaskSetup(1000);
     jtaskAttachFunc(managerInputFunc, 50); //anexa um função e sua base de tempo para ser executada
     jtaskAttachFunc([](){blinkLEDFunc(def_pin_D1);}, 500);  //anexa um função e sua base de tempo para ser executada
@@ -36,5 +37,6 @@ void setup() {
 
 //Loop principal
 void loop() {
+  disp.update();    
   jtaskLoop();
 }

@@ -4,6 +4,11 @@
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
 
+constexpr uint8_t def_pin_D1 = 23;
+constexpr uint8_t def_pin_D2 = 19;
+constexpr uint8_t def_pin_SCL = 22;     ///< GPIO para SCL do display OLED.
+constexpr uint8_t def_pin_SDA = 21;     ///< GPIO para SDA do display OLED.
+
 // ---------- Parâmetros das tasks (passados via pvParameters) ----------
 struct BlinkParams {
     uint8_t  pin;      // Pino do LED
@@ -52,7 +57,7 @@ void taskManagerInput(void* pvParameters) {
 
 // ---------- Setup ----------
 void setup() {
-    IIKit.setup();
+    disp.start(def_pin_SDA, def_pin_SCL);
     // Cria as tasks no núcleo 1, passando os parâmetros via pvParameters
     static BlinkParams paramsD1    = { def_pin_D1,  500  };
     xTaskCreatePinnedToCore(taskBlink,        "BlinkD1",    2048, &paramsD1,    1, nullptr, 1);
@@ -64,5 +69,5 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
-    IIKit.loop(); // Monitora os periféricos do kit
+    disp.update();
 }

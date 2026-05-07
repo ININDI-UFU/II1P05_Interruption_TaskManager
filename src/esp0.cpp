@@ -3,10 +3,6 @@
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
 
-
-
-constexpr uint8_t def_pin_ADC1 = 39;
-constexpr uint8_t def_pin_ADC2 = 36;
 constexpr uint8_t def_pin_D1 = 23;
 constexpr uint8_t def_pin_D2 = 19;
 constexpr uint8_t def_pin_SCL = 22;     ///< GPIO para SCL do display OLED.

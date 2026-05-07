@@ -203,7 +203,7 @@ inline bool jtaskAttachFunc(jtask_callback_t task, uint16_t limit)
   bool result = false;
   if (jtaskIndex < NUMTASKS) {
     jtaskStruct[jtaskIndex] = {0, limit, task};
-    ++jtaskIndex;
+    jtaskIndex = jtaskIndex + 1;
     result = true;
   }
 
