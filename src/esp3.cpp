@@ -1,5 +1,8 @@
 // https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/freertos.html
-#include "IIKit.h"
+#include <Arduino.h>
+#include "services/wserial.h"
+#include "services/ads1115.h"
+#include "services/display_ssd1306.h"
 
 // ---------- Parâmetros das tasks (passados via pvParameters) ----------
 struct BlinkParams {
@@ -20,9 +23,9 @@ void blinkLEDFunc(uint8_t pin) {
 
 // Lê os POTs e atualiza o display
 void managerInputFunc(void) {
-    const uint16_t vlPOT1 = IIKit.analogReadPot1();
-    const uint16_t vlPOT2 = IIKit.analogReadPot2();
-    IIKit.disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());
+    const uint16_t vlPOT1 = ads1115.analogReadPot1();
+    const uint16_t vlPOT2 = ads1115.analogReadPot2();
+    disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());
     wserial::plot("vlPOT1", vlPOT1);
     wserial::plot("vlPOT2", vlPOT2);
 }

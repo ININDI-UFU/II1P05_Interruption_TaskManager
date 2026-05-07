@@ -1,5 +1,12 @@
 // https://docs.espressif.com/projects/arduino-esp32/en/latest/api/timer.html
-#include "IIKit.h"
+#include "Arduino.h"
+#include "services/wserial.h"
+#include "services/ads1115.h"
+#include "services/display_ssd1306.h"
+
+constexpr uint8_t def_pin_ADC1 = 36;
+constexpr uint8_t def_pin_ADC2 = 39;
+constexpr uint8_t def_pin_D1 = 2;
 
 // ---------- Flags setadas pela ISR do timer ----------
 // volatile: impede que o compilador otimize o acesso a essas variáveis
@@ -7,15 +14,14 @@ volatile bool flagBlink = false;
 volatile bool flagInput = false;
 
 // ---------- Funções auxiliares ----------
-
 void blinkLEDFunc(uint8_t pin) {
     digitalWrite(pin, !digitalRead(pin));
 }
 
 void managerInputFunc(void) {
-    const uint16_t vlPOT1 = IIKit.analogReadPot1();
-    const uint16_t vlPOT2 = IIKit.analogReadPot2();
-    IIKit.disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
+    const uint16_t vlPOT1 = ads1115.analogReadPot1();
+    const uint16_t vlPOT2 = ads1115.analogReadPot2();
+    disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
     wserial::plot("vlPOT1", vlPOT1);
     wserial::plot("vlPOT2", vlPOT2);
 }
@@ -36,7 +42,6 @@ void IRAM_ATTR onTimer() {
 
 // ---------- Setup ----------
 void setup() {
-    IIKit.setup();
     timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
     timerAttachInterrupt(timer, &onTimer);
     timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
@@ -44,7 +49,6 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
-    IIKit.loop();
     // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {
         flagInput = false;

@@ -1,7 +1,16 @@
 //https://docs.espressif.com/projects/arduino-esp32/en/latest/api/timer.html
-#include "IIKit.h"   // Biblioteca base do framework Arduino, necessária para funções básicas como Serial e delays.
+#include <Arduino.h>   // Biblioteca base do framework Arduino, necessária para funções básicas como Serial e delays.
+
 #define NUMTASKS 3
 #include "util/jtask.h"
+#include "services/wserial.h"
+#include "services/ads1115.h"
+#include "services/display_ssd1306.h"
+
+constexpr uint8_t def_pin_ADC1 = 36;
+constexpr uint8_t def_pin_ADC2 = 39;
+constexpr uint8_t def_pin_D1 = 2;
+constexpr uint8_t def_pin_D2 = 4;
 
 //Funçao de alterar o estado de um led
 void blinkLEDFunc(uint8_t pin) {
@@ -10,26 +19,22 @@ void blinkLEDFunc(uint8_t pin) {
 
 //Função que le os valores dos POT e das Entradas 4 a 20 mA e plota no display
 void managerInputFunc(void) {
-    const uint16_t vlPOT1 = IIKit.analogReadPot1();
-    const uint16_t vlPOT2 = IIKit.analogReadPot2();
-    IIKit.disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
+    const uint16_t vlPOT1 = ads1115.analogReadPot1();
+    const uint16_t vlPOT2 = ads1115.analogReadPot2();
+    disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
     wserial::plot("vlPOT1", vlPOT1);
     wserial::plot("vlPOT2", vlPOT2);
 }
 
 //Configuração inicial do programa
 void setup() {
-    IIKit.setup();
-    //Faz as configuções do hardware ESP + Perifericos
-    IIKit.setup();
-    jtaskAttachFunc(managerInputFunc, 50000UL); //anexa um função e sua base de tempo para ser executada
-    jtaskAttachFunc([](){blinkLEDFunc(def_pin_D1);}, 500000UL);  //anexa um função e sua base de tempo para ser executada
-    jtaskAttachFunc([](){blinkLEDFunc(def_pin_D2);}, 1000000UL);  //anexa um função e sua base de tempo para ser executada
+    jtaskSetup(1000);
+    jtaskAttachFunc(managerInputFunc, 50); //anexa um função e sua base de tempo para ser executada
+    jtaskAttachFunc([](){blinkLEDFunc(def_pin_D1);}, 500);  //anexa um função e sua base de tempo para ser executada
+    jtaskAttachFunc([](){blinkLEDFunc(def_pin_D2);}, 1000);  //anexa um função e sua base de tempo para ser executada
 }
 
 //Loop principal
 void loop() {
-  //Monitora os perifericos
-  IIKit.loop();
   jtaskLoop();
 }
