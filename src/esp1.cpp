@@ -15,7 +15,6 @@ void blinkLEDFunc(uint8_t pin) {
 void managerInputFunc(void) {
     const uint16_t vlPOT1 = IIKit.analogReadPot1();
     const uint16_t vlPOT2 = IIKit.analogReadPot2();
-    IIKit.disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());
     wserial::plot("vlPOT1", vlPOT1);
     wserial::plot("vlPOT2", vlPOT2);
 }
@@ -36,9 +35,6 @@ void IRAM_ATTR onTimer() {
 
 // ---------- Setup ----------
 void setup() {
-    IIKit.setup();
-
-    // Configura o timer 0 com prescaler 80 → 1 tick = 1 µs (clock 80 MHz / 80)
     timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
     timerAttachInterrupt(timer, &onTimer);
     timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
@@ -46,8 +42,6 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
-    IIKit.loop();
-
     // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {
         flagInput = false;
