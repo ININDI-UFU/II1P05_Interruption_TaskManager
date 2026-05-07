@@ -57,12 +57,19 @@ void taskManagerInput(void* pvParameters) {
 
 // ---------- Setup ----------
 void setup() {
-    wserial.begin();    
+    wserial.begin();
     disp.begin(def_pin_SDA, def_pin_SCL);
     ads1115.begin();
+    net.begin(KIT_HOSTNAME);
+    
+    disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
+    disp.setText(2, KIT_HOSTNAME);
+    disp.setText(3, "");
 
     pinMode(def_pin_D1, OUTPUT);
-    pinMode(def_pin_D2, OUTPUT); 
+    pinMode(def_pin_D2, OUTPUT);  
+    
+    delay(50); 
 
     // Cria as tasks no núcleo 1, passando os parâmetros via pvParameters
     static BlinkParams paramsD1    = { def_pin_D1,  500  };
@@ -77,4 +84,5 @@ void setup() {
 void loop() {
     wserial.update();
     disp.update();
+    net.update();
 }

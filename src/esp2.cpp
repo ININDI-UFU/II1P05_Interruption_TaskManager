@@ -28,12 +28,19 @@ void managerInputFunc(void) {
 
 //Configuração inicial do programa
 void setup() {
-    wserial.begin();    
-    disp.begin(def_pin_SDA, def_pin_SCL);    
+    wserial.begin();
+    disp.begin(def_pin_SDA, def_pin_SCL);
     ads1115.begin();
+    net.begin(KIT_HOSTNAME);
     
+    disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
+    disp.setText(2, KIT_HOSTNAME);
+    disp.setText(3, "");
+
     pinMode(def_pin_D1, OUTPUT);
-    pinMode(def_pin_D2, OUTPUT); 
+    pinMode(def_pin_D2, OUTPUT);  
+    
+    delay(50); 
     
     ltask.begin(1000);
     ltask.attach(managerInputFunc, 50);               //anexa uma função e sua base de tempo para ser executada
@@ -45,5 +52,6 @@ void setup() {
 void loop() {
   disp.update();    
   wserial.update();
+  net.update();
   ltask.update();
 }

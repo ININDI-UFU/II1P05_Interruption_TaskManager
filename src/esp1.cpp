@@ -14,11 +14,11 @@ constexpr uint8_t def_pin_SDA = 21;     ///< GPIO para SDA do display OLED.
 // volatile: impede que o compilador otimize o acesso a essas variáveis
 volatile bool flagBlink = false;
 volatile bool flagInput = false;
+
 // ---------- ISR do timer (roda a cada 50 ms) ----------
 // IRAM_ATTR: mantém a função na RAM para execução rápida
 hw_timer_t* timer = nullptr;
 uint8_t contadorBlink = 0; // conta quantas vezes o timer disparou
-
 void IRAM_ATTR onTimer() {
     contadorBlink++;
     flagInput = true;           // sinaliza leitura dos POTs (a cada 50 ms)
@@ -65,7 +65,9 @@ void setup() {
 // ---------- Loop principal ----------
 void loop() {
     wserial.update();
-    disp.update();    
+    disp.update(); 
+    net.update(); 
+     
     // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {
         flagInput = false;

@@ -51,6 +51,7 @@ void loop()
 {
   wserial.update();
   disp.update();
+  net.update();
   
   const uint64_t currentTimeMS = millis();
 
