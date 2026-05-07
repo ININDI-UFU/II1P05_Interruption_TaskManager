@@ -1,5 +1,6 @@
 // https://docs.espressif.com/projects/arduino-esp32/en/latest/api/timer.html
 #include "Arduino.h"
+#include "services/lasecNet.h"
 #include "services/wserial.h"
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
@@ -13,20 +14,6 @@ constexpr uint8_t def_pin_SDA = 21;     ///< GPIO para SDA do display OLED.
 // volatile: impede que o compilador otimize o acesso a essas variáveis
 volatile bool flagBlink = false;
 volatile bool flagInput = false;
-
-// ---------- Funções auxiliares ----------
-void blinkLEDFunc(uint8_t pin) {
-    digitalWrite(pin, !digitalRead(pin));
-}
-
-void managerInputFunc(void) {
-    const uint16_t vlPOT1 = ads1115.analogReadPot1();
-    const uint16_t vlPOT2 = ads1115.analogReadPot2();
-    disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
-    wserial.plot("vlPOT1", vlPOT1);
-    wserial.plot("vlPOT2", vlPOT2);
-}
-
 // ---------- ISR do timer (roda a cada 50 ms) ----------
 // IRAM_ATTR: mantém a função na RAM para execução rápida
 hw_timer_t* timer = nullptr;
@@ -41,21 +28,38 @@ void IRAM_ATTR onTimer() {
     }
 }
 
+// ---------- Funções auxiliares ----------
+void blinkLEDFunc(uint8_t pin) {
+    digitalWrite(pin, !digitalRead(pin));
+}
+
+void managerInputFunc(void) {
+    const uint16_t vlPOT1 = ads1115.analogReadPot1();
+    const uint16_t vlPOT2 = ads1115.analogReadPot2();
+    disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
+    wserial.plot("vlPOT1", vlPOT1);
+    wserial.plot("vlPOT2", vlPOT2);
+}
+
 // ---------- Setup ----------
 void setup() {
     wserial.begin();
-    if (disp.begin(def_pin_SDA, def_pin_SCL)) {
-        disp.setText(1, "Inicializando...");
-        disp.setText(2, "WIFI not connected");
-        disp.setText(3, "Device: ");
-    }
-    ads1115.begin();   
+    disp.begin(def_pin_SDA, def_pin_SCL);
+    ads1115.begin();
+    net.begin(KIT_HOSTNAME);
+    
+    disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
+    disp.setText(2, KIT_HOSTNAME);
+    disp.setText(3, "");
+
+    pinMode(def_pin_D1, OUTPUT);
+    pinMode(def_pin_D2, OUTPUT);  
+    
+    delay(50); 
+
     timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
     timerAttachInterrupt(timer, &onTimer);
     timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
-    pinMode(def_pin_D1, OUTPUT);
-    pinMode(def_pin_D2, OUTPUT); 
-    delay(50);
 }
 
 // ---------- Loop principal ----------
