@@ -12,12 +12,14 @@ void blinkLEDFunc(uint8_t pin) {
 void managerInputFunc(void) {
     const uint16_t vlPOT1 = IIKit.analogReadPot1();
     const uint16_t vlPOT2 = IIKit.analogReadPot2();
+    IIKit.disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
     wserial::plot("vlPOT1", vlPOT1);
     wserial::plot("vlPOT2", vlPOT2);
 }
 
 //Configuração inicial do programa
 void setup() {
+    IIKit.setup();
     //Faz as configuções do hardware ESP + Perifericos
     IIKit.setup();
     jtaskAttachFunc(managerInputFunc, 50000UL); //anexa um função e sua base de tempo para ser executada
