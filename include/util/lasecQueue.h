@@ -1,6 +1,4 @@
-#ifndef UTIL_JQUEUE_H
-#define UTIL_JQUEUE_H
-
+#pragma once
 #include <Arduino.h>
 
 #if defined(ARDUINO_ARCH_ESP32)
@@ -26,11 +24,11 @@ typedef struct {
 #if defined(ARDUINO_ARCH_ESP32)
     portMUX_TYPE mux;
 #endif
-} jQueue_t;
+} lasecQueue_t;
 
-typedef jQueue_t* jQueueHandle_t;
+typedef lasecQueue_t* lasecQueueHandle_t;
 
-static inline bool jQueueCreate(jQueueHandle_t queue) {
+static inline bool lasecQueueCreate(lasecQueueHandle_t queue) {
     if (queue == nullptr) return false;
     queue->head = 0;
     queue->tail = 0;
@@ -41,7 +39,7 @@ static inline bool jQueueCreate(jQueueHandle_t queue) {
     return true;
 }
 
-static inline bool ARDUINO_ISR_ATTR jQueueSendFromISR(jQueueHandle_t xQueue, void (*pvItemToQueue)()) {
+static inline bool ARDUINO_ISR_ATTR lasecQueueSendFromISR(lasecQueueHandle_t xQueue, void (*pvItemToQueue)()) {
     if (xQueue == nullptr || pvItemToQueue == nullptr) return false;
 
 #if defined(ARDUINO_ARCH_ESP32)
@@ -72,7 +70,7 @@ static inline bool ARDUINO_ISR_ATTR jQueueSendFromISR(jQueueHandle_t xQueue, voi
     return result;
 }
 
-static inline bool jQueueReceive(jQueueHandle_t xQueue, void (**pvBuffer)()) {
+static inline bool lasecQueueReceive(lasecQueueHandle_t xQueue, void (**pvBuffer)()) {
     if (xQueue == nullptr || pvBuffer == nullptr) return false;
 
 #if defined(ARDUINO_ARCH_ESP32)
@@ -102,5 +100,3 @@ static inline bool jQueueReceive(jQueueHandle_t xQueue, void (**pvBuffer)()) {
 
     return result;
 }
-
-#endif

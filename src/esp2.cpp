@@ -1,8 +1,8 @@
 //https://docs.espressif.com/projects/arduino-esp32/en/latest/api/timer.html
 #include <Arduino.h>   // Biblioteca base do framework Arduino, necessária para funções básicas como Serial e delays.
 
-#define NUMTASKS 3
-#include "util/jtask.h"
+#define LASEC_MAX_TASKS 3
+#include "util/lasecTask.h"
 #include "services/wserial.h"
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
@@ -35,15 +35,15 @@ void setup() {
     pinMode(def_pin_D1, OUTPUT);
     pinMode(def_pin_D2, OUTPUT); 
     
-    jtaskSetup(1000);
-    jtaskAttachFunc(managerInputFunc, 50); //anexa um função e sua base de tempo para ser executada
-    jtaskAttachFunc([](){blinkLEDFunc(def_pin_D1);}, 500);  //anexa um função e sua base de tempo para ser executada
-    jtaskAttachFunc([](){blinkLEDFunc(def_pin_D2);}, 1000);  //anexa um função e sua base de tempo para ser executada
+    ltask.begin(1000);
+    ltask.attach(managerInputFunc, 50);               //anexa uma função e sua base de tempo para ser executada
+    ltask.attach([](){blinkLEDFunc(def_pin_D1);}, 500);   //anexa uma função e sua base de tempo para ser executada
+    ltask.attach([](){blinkLEDFunc(def_pin_D2);}, 1000);  //anexa uma função e sua base de tempo para ser executada
 }
 
 //Loop principal
 void loop() {
   disp.update();    
   wserial.update();
-  jtaskLoop();
+  ltask.update();
 }

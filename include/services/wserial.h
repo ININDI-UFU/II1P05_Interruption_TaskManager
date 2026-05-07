@@ -10,7 +10,7 @@
 
 #define WSERIAL_NEWLINE "\r\n"
 
-class WSerial_c {
+class WSerial {
 private:
     IPAddress   _udpTargetIP;
     uint16_t    _udpTargetPort  = 0;
@@ -61,10 +61,12 @@ private:
         _udpTargetPort = port;
         if (cmd == "CONNECT") {
             _udpLinked = true;
+            Serial.println("[WSerial] Chaveando para UDP -> " + _udpTargetIP.toString() + ":" + String(_udpTargetPort));
             _send("CONNECT:" + WiFi.localIP().toString() + ":" + String(_udpTargetPort) + "\n");
         } else if (cmd == "DISCONNECT" && _udpLinked) {
             _send("DISCONNECT:" + WiFi.localIP().toString() + ":" + String(_udpTargetPort) + "\n");
             _udpLinked = false;
+            Serial.println("[WSerial] Chaveando de volta para Serial");
         }
     }
 
@@ -158,4 +160,4 @@ public:
     void print(const T &data) { _send(String(data)); }
 };
 
-WSerial_c wserial; ///< Instância global de comunicação serial/UDP.
+WSerial wserial; ///< Instância global de comunicação serial/UDP.
