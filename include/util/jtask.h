@@ -11,6 +11,11 @@
 #include <avr/io.h>
 #endif
 
+// Garante que ARDUINO_ISR_ATTR exista em plataformas que não o definem (ex.: AVR)
+#ifndef ARDUINO_ISR_ATTR
+#define ARDUINO_ISR_ATTR
+#endif
+
 #ifndef NUMTASKS
 #define NUMTASKS 2
 #endif
@@ -55,7 +60,7 @@ inline portMUX_TYPE &jtaskMuxRef()
 }
 #endif
 
-inline void jtaskTick()
+inline void ARDUINO_ISR_ATTR jtaskTick()
 {
   volatile uint8_t &jtaskIndex = jtaskIndexRef();
   jtask_counter_config_t (&jtaskStruct)[NUMTASKS] = jtaskStructRef();

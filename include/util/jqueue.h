@@ -9,6 +9,11 @@
 #include <avr/interrupt.h>
 #endif
 
+// Garante que ARDUINO_ISR_ATTR exista em plataformas que não o definem (ex.: AVR)
+#ifndef ARDUINO_ISR_ATTR
+#define ARDUINO_ISR_ATTR
+#endif
+
 #ifndef MAXLENGTHJQUEUE
 #define MAXLENGTHJQUEUE 5
 #endif
@@ -36,7 +41,7 @@ static inline bool jQueueCreate(jQueueHandle_t queue) {
     return true;
 }
 
-static inline bool jQueueSendFromISR(jQueueHandle_t xQueue, void (*pvItemToQueue)()) {
+static inline bool ARDUINO_ISR_ATTR jQueueSendFromISR(jQueueHandle_t xQueue, void (*pvItemToQueue)()) {
     if (xQueue == nullptr || pvItemToQueue == nullptr) return false;
 
 #if defined(ARDUINO_ARCH_ESP32)
