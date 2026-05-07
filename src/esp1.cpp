@@ -58,7 +58,7 @@ void setup() {
     delay(50); 
 
     timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
-    timerAttachInterrupt(timer, &onTimer);
+    timerAttachInterrupt(timer, &onTimer); //vincula a função onTimer à interrupção do timer 
     timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
 }
 
@@ -68,7 +68,6 @@ void loop() {
     disp.update(); 
     net.update(); 
      
-    // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {
         flagInput = false;
         managerInputFunc();

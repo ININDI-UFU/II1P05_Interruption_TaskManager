@@ -3,9 +3,12 @@
 
 #define LASEC_MAX_TASKS 3
 #include "util/lasecTask.h"
+
+#include "services/lasecNet.h"
 #include "services/wserial.h"
 #include "services/ads1115.h"
 #include "services/display_ssd1306.h"
+#include "util/lasecDebounce.h"
 
 constexpr uint8_t def_pin_D1 = 23;
 constexpr uint8_t def_pin_D2 = 19;
