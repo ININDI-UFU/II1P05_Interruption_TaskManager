@@ -28,7 +28,13 @@ void managerInputFunc(void) {
 
 //Configuração inicial do programa
 void setup() {
+    wserial::setup(115200,47268UL);    
     disp.start(def_pin_SDA, def_pin_SCL);    
+    ads1115.begin();
+    
+    pinMode(def_pin_D1, OUTPUT);
+    pinMode(def_pin_D2, OUTPUT); 
+    
     jtaskSetup(1000);
     jtaskAttachFunc(managerInputFunc, 50); //anexa um função e sua base de tempo para ser executada
     jtaskAttachFunc([](){blinkLEDFunc(def_pin_D1);}, 500);  //anexa um função e sua base de tempo para ser executada

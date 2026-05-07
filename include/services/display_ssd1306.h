@@ -71,9 +71,12 @@ public:
 
 bool Display_SSD1306::start(const uint8_t &SDA, const uint8_t &SCL) {
     if (SDA != 0 && SCL != 0) {
-        Wire.setPins(SDA, SCL);
+        Wire.begin(SDA, SCL);
+    } else {
+        Wire.begin();
     }
-    if (!SSD1306.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    // periphBegin=false: evita que SSD1306.begin() reinicialize o Wire e sobrescreva os pinos
+    if (!SSD1306.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS, false, false)) {
         return false;
     }
     setText(1, ca_lineTxt[0]);

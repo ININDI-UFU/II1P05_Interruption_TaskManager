@@ -43,14 +43,24 @@ void IRAM_ATTR onTimer() {
 
 // ---------- Setup ----------
 void setup() {
-    disp.start(def_pin_SDA, def_pin_SCL);    
+    wserial::setup(115200,47268UL);
+    if (disp.start(def_pin_SDA, def_pin_SCL)) {
+        disp.setText(1, "Inicializando...");
+        disp.setText(2, "WIFI not connected");
+        disp.setText(3, "Device: ");
+    }
+    ads1115.begin();   
     timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
     timerAttachInterrupt(timer, &onTimer);
     timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
+    pinMode(def_pin_D1, OUTPUT);
+    pinMode(def_pin_D2, OUTPUT); 
+    delay(50);
 }
 
 // ---------- Loop principal ----------
 void loop() {
+    wserial::loop();
     disp.update();    
     // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {

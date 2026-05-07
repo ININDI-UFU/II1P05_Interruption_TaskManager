@@ -57,7 +57,13 @@ void taskManagerInput(void* pvParameters) {
 
 // ---------- Setup ----------
 void setup() {
+    wserial::setup(115200,47268UL);    
     disp.start(def_pin_SDA, def_pin_SCL);
+    ads1115.begin();
+
+    pinMode(def_pin_D1, OUTPUT);
+    pinMode(def_pin_D2, OUTPUT); 
+
     // Cria as tasks no núcleo 1, passando os parâmetros via pvParameters
     static BlinkParams paramsD1    = { def_pin_D1,  500  };
     xTaskCreatePinnedToCore(taskBlink,        "BlinkD1",    2048, &paramsD1,    1, nullptr, 1);
@@ -69,5 +75,6 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
+    wserial::loop();
     disp.update();
 }

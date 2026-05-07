@@ -22,12 +22,23 @@ void managerInputFunc(void) {
 
 void setup()
 {
-  disp.start(def_pin_SDA, def_pin_SCL);
+  wserial::setup(115200,47268UL);   
+  if (disp.start(def_pin_SDA, def_pin_SCL)) {
+      disp.setText(1, "Inicializando...");
+      disp.setText(2, "WIFI not connected");
+      disp.setText(3, "Display Ativo");
+  } else {
+      wserial::println("Falha ao iniciar o display OLED");
+  }
+  ads1115.begin();
   pinMode(def_pin_D1, OUTPUT);
+  pinMode(def_pin_D2, OUTPUT);  
+  delay(50);  
 }
 
 void loop()
 {
+  wserial::loop();
   disp.update();
   const uint64_t currentTimeMS = millis();
 
