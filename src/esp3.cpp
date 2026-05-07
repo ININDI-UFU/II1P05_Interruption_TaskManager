@@ -2,7 +2,6 @@
 #include "IIKit.h"
 
 // ---------- Parâmetros das tasks (passados via pvParameters) ----------
-
 struct BlinkParams {
     uint8_t  pin;      // Pino do LED
     uint32_t delayMs;  // Período do pisca em milissegundos
