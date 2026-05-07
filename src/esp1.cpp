@@ -23,8 +23,8 @@ void managerInputFunc(void) {
     const uint16_t vlPOT1 = ads1115.analogReadPot1();
     const uint16_t vlPOT2 = ads1115.analogReadPot2();
     disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());    
-    wserial::plot("vlPOT1", vlPOT1);
-    wserial::plot("vlPOT2", vlPOT2);
+    wserial.plot("vlPOT1", vlPOT1);
+    wserial.plot("vlPOT2", vlPOT2);
 }
 
 // ---------- ISR do timer (roda a cada 50 ms) ----------
@@ -43,8 +43,8 @@ void IRAM_ATTR onTimer() {
 
 // ---------- Setup ----------
 void setup() {
-    wserial::setup(115200,47268UL);
-    if (disp.start(def_pin_SDA, def_pin_SCL)) {
+    wserial.begin();
+    if (disp.begin(def_pin_SDA, def_pin_SCL)) {
         disp.setText(1, "Inicializando...");
         disp.setText(2, "WIFI not connected");
         disp.setText(3, "Device: ");
@@ -60,7 +60,7 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
-    wserial::loop();
+    wserial.update();
     disp.update();    
     // Verifica as flags setadas pela ISR — processamento fora da interrupção
     if (flagInput) {

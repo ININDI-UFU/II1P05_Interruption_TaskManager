@@ -16,19 +16,19 @@ void managerInputFunc(void) {
     const uint16_t vlPOT1 = ads1115.analogReadPot1();
     const uint16_t vlPOT2 = ads1115.analogReadPot2();
     disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());
-    wserial::plot("vlPOT1", vlPOT1);
-    wserial::plot("vlPOT2", vlPOT2);
+    wserial.plot("vlPOT1", vlPOT1);
+    wserial.plot("vlPOT2", vlPOT2);
 }
 
 void setup()
 {
-  wserial::setup(115200,47268UL);   
-  if (disp.start(def_pin_SDA, def_pin_SCL)) {
+  wserial.begin();
+  if (disp.begin(def_pin_SDA, def_pin_SCL)) {
       disp.setText(1, "Inicializando...");
       disp.setText(2, "WIFI not connected");
       disp.setText(3, "Display Ativo");
   } else {
-      wserial::println("Falha ao iniciar o display OLED");
+      wserial.println("Falha ao iniciar o display OLED");
   }
   ads1115.begin();
   pinMode(def_pin_D1, OUTPUT);
@@ -38,7 +38,7 @@ void setup()
 
 void loop()
 {
-  wserial::loop();
+  wserial.update();
   disp.update();
   const uint64_t currentTimeMS = millis();
 
@@ -49,10 +49,17 @@ void loop()
     blinkLEDFunc(def_pin_D1);
   }
 
-  static uint64_t previousTimeMS2 = 0;  
-  if ((currentTimeMS - previousTimeMS2) >= 50)
+  static uint64_t previousTimeMS2 = 0;
+  if ((currentTimeMS - previousTimeMS2) >= 1000)
   {
     previousTimeMS2 = currentTimeMS;
+    blinkLEDFunc(def_pin_D2);
+  }
+
+  static uint64_t previousTimeMS3 = 0;  
+  if ((currentTimeMS - previousTimeMS3) >= 50)
+  {
+    previousTimeMS3 = currentTimeMS;
     managerInputFunc();
   } 
 }

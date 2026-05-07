@@ -31,8 +31,8 @@ void managerInputFunc(void) {
     const uint16_t vlPOT1 = ads1115.analogReadPot1();
     const uint16_t vlPOT2 = ads1115.analogReadPot2();
     disp.setText(2, ("P1:" + String(vlPOT1) + "  P2:" + String(vlPOT2)).c_str());
-    wserial::plot("vlPOT1", vlPOT1);
-    wserial::plot("vlPOT2", vlPOT2);
+    wserial.plot("vlPOT1", vlPOT1);
+    wserial.plot("vlPOT2", vlPOT2);
 }
 
 // ---------- Tasks FreeRTOS ----------
@@ -57,8 +57,8 @@ void taskManagerInput(void* pvParameters) {
 
 // ---------- Setup ----------
 void setup() {
-    wserial::setup(115200,47268UL);    
-    disp.start(def_pin_SDA, def_pin_SCL);
+    wserial.begin();    
+    disp.begin(def_pin_SDA, def_pin_SCL);
     ads1115.begin();
 
     pinMode(def_pin_D1, OUTPUT);
@@ -75,6 +75,6 @@ void setup() {
 
 // ---------- Loop principal ----------
 void loop() {
-    wserial::loop();
+    wserial.update();
     disp.update();
 }
