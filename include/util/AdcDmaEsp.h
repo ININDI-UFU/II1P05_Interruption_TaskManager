@@ -1,4 +1,21 @@
 #pragma once
+
+// ─── Compatibilidade: somente ESP32 original ─────────────────────────────────
+// I2S_MODE_ADC_BUILT_IN, i2s_set_adc_mode() e a API legada driver/adc.h
+// existem APENAS no ESP32 original (target esp32).
+// ESP32-S3, S2 e C3 usam esp_adc/adc_continuous.h (IDF v5) para DMA de ADC.
+#if !defined(ARDUINO_ARCH_ESP32)
+#  error "AdcDmaEsp.h: somente suportado em ARDUINO_ARCH_ESP32."
+#elif defined(CONFIG_IDF_TARGET_ESP32S3) || \
+      defined(CONFIG_IDF_TARGET_ESP32S2) || \
+      defined(CONFIG_IDF_TARGET_ESP32C3) || \
+      defined(CONFIG_IDF_TARGET_ESP32C6) || \
+      defined(CONFIG_IDF_TARGET_ESP32H2)
+#  error "AdcDmaEsp.h: I2S_MODE_ADC_BUILT_IN não existe neste target. " \
+         "Use esp_adc/adc_continuous.h para DMA no ESP32-S3/S2/C3."
+#endif
+// ─────────────────────────────────────────────────────────────────────────────
+
 #include <Arduino.h>
 #include "driver/i2s.h"
 #include "driver/adc.h"

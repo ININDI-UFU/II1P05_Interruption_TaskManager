@@ -22,6 +22,17 @@
 
 #if defined(ARDUINO_ARCH_ESP32)
 #include <freertos/FreeRTOS.h>
+
+// timerBegin(freq_Hz) é a API do Arduino-ESP32 >= 3.0.0 (espressif32 >= 6.0.0).
+// Com espressif32 v5.x (arduino-esp32 v2.x) a assinatura é timerBegin(num, div, up).
+// Atualize platformio.ini: platform = espressif32 @ ^6.0.0
+#  ifndef ESP_ARDUINO_VERSION_MAJOR
+#    error "lasecTask.h: não foi possível detectar a versão do Arduino-ESP32."
+#  elif ESP_ARDUINO_VERSION_MAJOR < 3
+#    error "lasecTask.h: requer Arduino-ESP32 >= 3.0.0. " \
+           "Defina: platform = espressif32 @ ^6.0.0 no platformio.ini"
+#  endif
+
 #elif defined(ARDUINO_ARCH_AVR)
 #include <avr/interrupt.h>
 #include <avr/io.h>

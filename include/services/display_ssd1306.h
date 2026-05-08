@@ -17,7 +17,7 @@
 #define SCREEN_HEIGHT 64    ///< Altura do display em pixels.
 #define OLED_RESET -1       ///< Pino de reset (ou -1 para compartilhar com o reset do Arduino).
 
-Adafruit_SSD1306 SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+inline Adafruit_SSD1306 SSD1306(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 /**
  * @class Display_SSD1306
@@ -137,5 +137,5 @@ void Display_SSD1306::setFuncMode(bool funcMode) {
     this->isFuncMode = funcMode;
 }
 
-Display_SSD1306 disp;    ///< Display OLED.
+inline Display_SSD1306 disp;    ///< Display OLED.
 #endif 

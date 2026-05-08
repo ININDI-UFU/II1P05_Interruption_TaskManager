@@ -23,10 +23,15 @@
  */
 
 /********** GPIO DEFINITIONS ***********/
-constexpr uint8_t def_pin_ADC1    = 39;  ///< GPIO para entrada ADC1. ADC1_CHANNEL_3
-constexpr uint8_t def_pin_ADC2    = 36;  ///< GPIO para entrada ADC2. ADC1_CHANNEL_0
-constexpr uint8_t def_pin_RTN2    = 35;  ///< GPIO para botão retentivo 2.
-constexpr uint8_t def_pin_PUSH1   = 34;  ///< GPIO para botão push 1.
+// ATENÇÃO — ESP32 original: GPIO 34, 35, 36, 39 são INPUT-ONLY.
+// Esses pinos NÃO possuem resistores internos de pull-up/pull-down no silício.
+// INPUT_PULLDOWN em def_pin_PUSH1 (34) e def_pin_RTN2 (35) é ignorado
+// silenciosamente → use resistores externos de pull-down no hardware.
+// No ESP32-S3 esses números de GPIO têm função diferente (verificar pinout do módulo).
+constexpr uint8_t def_pin_ADC1    = 39;  ///< GPIO para entrada ADC1. ADC1_CHANNEL_3 (ESP32). INPUT-ONLY, sem pull.
+constexpr uint8_t def_pin_ADC2    = 36;  ///< GPIO para entrada ADC2. ADC1_CHANNEL_0 (ESP32). INPUT-ONLY, sem pull.
+constexpr uint8_t def_pin_RTN2    = 35;  ///< GPIO para botão retentivo 2. INPUT-ONLY no ESP32 — sem pull interno.
+constexpr uint8_t def_pin_PUSH1   = 34;  ///< GPIO para botão push 1. INPUT-ONLY no ESP32 — sem pull interno.
 constexpr uint8_t def_pin_PWM     = 33;  ///< GPIO para saída PWM.
 constexpr uint8_t def_pin_PUSH2   = 32;  ///< GPIO para botão push 2.
 constexpr uint8_t def_pin_RELE    = 27;  ///< GPIO para relé.
@@ -58,9 +63,12 @@ public:
     /** @brief Configura todos os pinos e inicializa o debounce. */
     void begin()
     {
+        // GPIO 34 e 35 (ESP32 original): INPUT-ONLY, sem pull interno.
+        // INPUT_PULLDOWN passado ao pinMode/begin é ignorado pelo chip.
+        // Garanta resistores externos de pull-down no hardware.
         rtn_1.begin (def_pin_RTN1,  INPUT_PULLDOWN, HIGH, 20);
-        rtn_2.begin (def_pin_RTN2,  INPUT_PULLDOWN, HIGH, 20);
-        push_1.begin(def_pin_PUSH1, INPUT_PULLDOWN, HIGH, 20);
+        rtn_2.begin (def_pin_RTN2,  INPUT_PULLDOWN, HIGH, 20);  // GPIO35 — sem pull interno no ESP32
+        push_1.begin(def_pin_PUSH1, INPUT_PULLDOWN, HIGH, 20);  // GPIO34 — sem pull interno no ESP32
         push_2.begin(def_pin_PUSH2, INPUT_PULLDOWN, HIGH, 20);
 
         pinMode(def_pin_D1,      OUTPUT);

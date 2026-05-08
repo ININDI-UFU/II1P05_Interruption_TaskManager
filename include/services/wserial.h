@@ -160,4 +160,4 @@ public:
     void print(const T &data) { _send(String(data)); }
 };
 
-WSerial wserial; ///< Instância global de comunicação serial/UDP.
+inline WSerial wserial; ///< Instância global de comunicação serial/UDP.
