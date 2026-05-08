@@ -57,9 +57,10 @@ void setup() {
     
     delay(50); 
 
-    timer = timerBegin(1000000); // frequência do timer: 1 MHz (1 tick = 1 µs)
-    timerAttachInterrupt(timer, &onTimer); //vincula a função onTimer à interrupção do timer 
-    timerAlarm(timer, 50000, true, 0); // dispara a cada 50.000 µs = 50 ms
+    timer = timerBegin(0, 80, true); // frequência do timer: 1 MHz (1 tick = 1 µs)
+    timerAttachInterrupt(timer, &onTimer, true); //vincula a função onTimer à interrupção do timer 
+    timerAlarmWrite(timer, 50000, true); // dispara a cada 50.000 µs = 50 ms
+    timerAlarmEnable(timer);
 }
 
 // ---------- Loop principal ----------
