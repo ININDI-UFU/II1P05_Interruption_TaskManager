@@ -41,6 +41,7 @@ public:
      * @brief Inicializa o dispositivo ADS1115.
      *
      * Define o ganho padrão como GAIN_TWOTHIRDS e inicializa o dispositivo.
+     * @param wire Barramento configurado antes com Wire.begin(SDA, SCL).
      * @return true se o dispositivo foi inicializado com sucesso, false caso contrário.
      */
     bool begin(TwoWire &wire = Wire) {

@@ -15,8 +15,10 @@ void blinkLEDFunc(uint8_t pin) {
 
 void setup() {
   wserial.begin();
+  
   Wire.begin(def_pin_SDA, def_pin_SCL);
   disp.begin(Wire);
+
   net.begin(KIT_HOSTNAME);
 
   disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
