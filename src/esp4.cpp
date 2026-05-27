@@ -107,12 +107,7 @@ void loop()
 
   push2.tick([](lasecDebounce::Event event) {
     if (event == lasecDebounce::Held) {
-      static uint32_t previousBlinkMS = 0;
-      const uint32_t currentTimeMS = millis();
-      if ((currentTimeMS - previousBlinkMS) >= 250) {
-        previousBlinkMS = currentTimeMS;
-        blinkLEDFunc(def_pin_D4);
-      }
+      blinkLEDFunc(def_pin_D4);
     } else if (event == lasecDebounce::Released) {
       digitalWrite(def_pin_D4, LOW);
     }

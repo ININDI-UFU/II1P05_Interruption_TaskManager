@@ -5,12 +5,12 @@
 #include "services/display_ssd1306.h"
 #include "util/lasecDebounce.h"
 
-constexpr uint8_t def_pin_PUSH1 = 34;
+constexpr uint8_t def_pin_PUSH2 = 32; // tem pull-down interno
 constexpr uint8_t def_pin_D4 = 4;
 constexpr uint8_t def_pin_SCL = 22;
 constexpr uint8_t def_pin_SDA = 21;
 
-lasecDebounce push1;
+lasecDebounce btn;
 
 void setup() {
   wserial.begin();
@@ -21,10 +21,10 @@ void setup() {
   net.begin(KIT_HOSTNAME);
 
   disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
-  disp.setText(2, KIT_HOSTNAME);
+  disp.setText(2, "BTN GPIO32");
 
   pinMode(def_pin_D4, OUTPUT); digitalWrite(def_pin_D4, LOW);  
-  push1.begin(def_pin_PUSH1, INPUT, HIGH, 20);
+  btn.begin(def_pin_PUSH2, INPUT_PULLDOWN, HIGH, 20);
 }
 
 void loop() {
@@ -32,15 +32,15 @@ void loop() {
   wserial.update();
   disp.update();
 
-  push1.tick([](lasecDebounce::Event event) {
+  btn.tick([](lasecDebounce::Event event) {
     if (event == lasecDebounce::Pressed) {
       digitalWrite(def_pin_D4, HIGH);
-      wserial.println("push1 pressed");
+      wserial.println("button pressed");
     }
 
     if (event == lasecDebounce::Released) {
       digitalWrite(def_pin_D4, LOW);
-      wserial.println("push1 released");
+      wserial.println("button released");
     }
   });
 }
