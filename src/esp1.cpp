@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <Wire.h>
 #include "services/lasecNet.h"
 #include "services/wserial.h"
 #include "services/display_ssd1306.h"
@@ -14,7 +15,8 @@ void blinkLEDFunc(uint8_t pin) {
 
 void setup() {
   wserial.begin();
-  disp.begin(def_pin_SDA, def_pin_SCL);
+  Wire.begin(def_pin_SDA, def_pin_SCL);
+  disp.begin(Wire);
   net.begin(KIT_HOSTNAME);
 
   disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());

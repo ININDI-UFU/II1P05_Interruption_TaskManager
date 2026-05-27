@@ -1,4 +1,5 @@
 //https://docs.espressif.com/projects/arduino-esp32/en/latest/api/timer.html
+#include <Wire.h>
 #include <Arduino.h>   // Biblioteca base do framework Arduino, necessária para funções básicas como Serial e delays.
 
 #define LASEC_MAX_TASKS 3
@@ -32,8 +33,9 @@ void managerInputFunc(void) {
 //Configuração inicial do programa
 void setup() {
     wserial.begin();
-    disp.begin(def_pin_SDA, def_pin_SCL);
-    ads1115.begin();
+    Wire.begin(def_pin_SDA, def_pin_SCL);
+    disp.begin(Wire);
+    ads1115.begin(Wire);
     net.begin(KIT_HOSTNAME);
     
     disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());

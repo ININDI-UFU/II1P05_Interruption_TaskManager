@@ -14,6 +14,7 @@
 
 #include <Arduino.h>
 #include <EEPROM.h>
+#include <Wire.h>
 
 #include "services/wserial.h"
 #include "services/display_ssd1306.h"
@@ -50,9 +51,10 @@ public:
     {
         // ── Serial / UDP ──────────────────────────────────────────────────
         wserial.begin();
+        Wire.begin(def_pin_SDA, def_pin_SCL);
 
         // ── Display ───────────────────────────────────────────────────────
-        if (!disp.begin(def_pin_SDA, def_pin_SCL)) {
+        if (!disp.begin(Wire)) {
             errorMsg("Display initialization failed.", true);
         }
         disp.setText(1, "Inicializando...");
@@ -71,7 +73,7 @@ public:
         gpio.begin();
 
         // ── ADC ───────────────────────────────────────────────────────────
-        if (!ads1115.begin()) errorMsg("ADS error.", true);
+        if (!ads1115.begin(Wire)) errorMsg("ADS error.", true);
     }
 
     /** @brief Deve ser chamado em loop(). Atualiza todas as libs. */

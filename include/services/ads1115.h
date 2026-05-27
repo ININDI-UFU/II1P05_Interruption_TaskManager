@@ -24,9 +24,9 @@ private:
     bool _started = false;
     uint8_t _address = 0x48;
 
-    bool isI2CDevicePresent(uint8_t address) {
-        Wire.beginTransmission(address);
-        return Wire.endTransmission() == 0;
+    bool isI2CDevicePresent(TwoWire &wire, uint8_t address) {
+        wire.beginTransmission(address);
+        return wire.endTransmission() == 0;
     }
 
 public:
@@ -43,13 +43,13 @@ public:
      * Define o ganho padrão como GAIN_TWOTHIRDS e inicializa o dispositivo.
      * @return true se o dispositivo foi inicializado com sucesso, false caso contrário.
      */
-    bool begin() {
+    bool begin(TwoWire &wire = Wire) {
         ((Adafruit_ADS1115 *)this)->setGain(adsGain_t::GAIN_TWOTHIRDS);
         ((Adafruit_ADS1115 *)this)->setDataRate(RATE_ADS1115_860SPS);
 
         _started = false;
         for (uint8_t address = 0x48; address <= 0x4B; ++address) {
-            if (isI2CDevicePresent(address) && ((Adafruit_ADS1115 *)this)->begin(address)) {
+            if (isI2CDevicePresent(wire, address) && ((Adafruit_ADS1115 *)this)->begin(address, &wire)) {
                 _address = address;
                 _started = true;
                 break;

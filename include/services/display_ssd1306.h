@@ -61,7 +61,7 @@ public:
      * @param SCL Pino SCL para comunicação I2C.
      * @return true se a inicialização foi bem-sucedida, false caso contrário.
      */
-    bool begin(const uint8_t &SDA = 0, const uint8_t &SCL = 0);
+    bool begin(TwoWire &wire = Wire);
 
     /**
      * @brief Atualiza o conteúdo do display OLED.
@@ -69,12 +69,9 @@ public:
     void update(void);
 };
 
-bool Display_SSD1306::begin(const uint8_t &SDA, const uint8_t &SCL) {
-    if (SDA != 0 && SCL != 0) {
-        Wire.begin(SDA, SCL);
-    } else {
-        Wire.begin();
-    }
+bool Display_SSD1306::begin(TwoWire &wire) {
+    if (&wire != &Wire) return false;
+
     // periphBegin=false: evita que SSD1306.begin() reinicialize o Wire e sobrescreva os pinos
     if (!SSD1306.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS, false, false)) {
         return false;

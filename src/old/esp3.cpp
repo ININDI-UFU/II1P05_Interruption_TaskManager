@@ -1,5 +1,6 @@
 // https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/system/freertos.html
 #include <Arduino.h>
+#include <Wire.h>
 #include "services/lasecNet.h"
 #include "services/wserial.h"
 #include "services/ads1115.h"
@@ -60,8 +61,9 @@ void taskManagerInput(void* pvParameters) {
 // ---------- Setup ----------
 void setup() {
     wserial.begin();
-    disp.begin(def_pin_SDA, def_pin_SCL);
-    ads1115.begin();
+    Wire.begin(def_pin_SDA, def_pin_SCL);
+    disp.begin(Wire);
+    ads1115.begin(Wire);
     net.begin(KIT_HOSTNAME);
     
     disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());

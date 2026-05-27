@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include <Wire.h>
 #include <EEPROM.h>
 #include "services/lasecNet.h"
 #include "services/wserial.h"
@@ -57,8 +58,9 @@ void managerInputFunc(void) {
 void setup()
 {
   wserial.begin();
-  disp.begin(def_pin_SDA, def_pin_SCL);
-  adsOk = ads1115.begin();
+  Wire.begin(def_pin_SDA, def_pin_SCL);
+  disp.begin(Wire);
+  adsOk = ads1115.begin(Wire);
   net.begin(KIT_HOSTNAME);
   
   disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
