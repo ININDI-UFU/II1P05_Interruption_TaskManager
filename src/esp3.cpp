@@ -12,10 +12,8 @@ bool adsOk = false;
 
 void managerInputFunc() {
   if (!adsOk) return;
-
   const int16_t pot1 = ads1115.analogReadPot1();
   const int16_t pot2 = ads1115.analogReadPot2();
-
   wserial.plot("pot1", pot1);
   wserial.plot("pot2", pot2);
   disp.setText(2, ("P1:" + String(pot1) + " P2:" + String(pot2)).c_str());
@@ -27,7 +25,6 @@ void setup() {
   disp.begin(Wire);
   adsOk = ads1115.begin(Wire);
   net.begin(KIT_HOSTNAME);
-
   disp.setText(1, (WiFi.localIP().toString() + " ID:" + String(KIT_ID)).c_str());
   disp.setText(2, "");
   disp.setText(3, adsOk ? "ADS OK" : "ADS ERRO");
