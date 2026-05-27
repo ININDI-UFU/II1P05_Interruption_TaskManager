@@ -10,6 +10,7 @@
  */
 
 #include <Adafruit_ADS1X15.h>
+#include <Wire.h>
 
 /**
  * @class ADS1115_c
@@ -19,6 +20,15 @@
  * e oferecendo um método de leitura direta de canais analógicos.
  */
 class ADS1115 : protected Adafruit_ADS1115 {
+private:
+    bool _started = false;
+    uint8_t _address = 0x48;
+
+    bool isI2CDevicePresent(uint8_t address) {
+        Wire.beginTransmission(address);
+        return Wire.endTransmission() == 0;
+    }
+
 public:
     /**
      * @brief Construtor padrão.
@@ -35,7 +45,25 @@ public:
      */
     bool begin() {
         ((Adafruit_ADS1115 *)this)->setGain(adsGain_t::GAIN_TWOTHIRDS);
-        return ((Adafruit_ADS1115 *)this)->begin();
+        ((Adafruit_ADS1115 *)this)->setDataRate(RATE_ADS1115_860SPS);
+
+        _started = false;
+        for (uint8_t address = 0x48; address <= 0x4B; ++address) {
+            if (isI2CDevicePresent(address) && ((Adafruit_ADS1115 *)this)->begin(address)) {
+                _address = address;
+                _started = true;
+                break;
+            }
+        }
+        return _started;
+    }
+
+    bool isStarted() const {
+        return _started;
+    }
+
+    uint8_t address() const {
+        return _address;
     }
 
     /**
@@ -44,26 +72,27 @@ public:
      * @param channel O canal analógico a ser lido (0 a 3).
      * @return Valor analógico lido do canal (16 bits).
      */
-    uint16_t analogRead(uint8_t channel) {
+    int16_t analogRead(uint8_t channel) {
+        if (!_started || channel > 3) return 0;
         return ((Adafruit_ADS1115 *)this)->readADC_SingleEnded(channel);
     }
 
-    uint16_t analogReadPot1(void)
+    int16_t analogReadPot1(void)
     {
         return analogRead(1);
     }
 
-    uint16_t analogReadPot2(void)
+    int16_t analogReadPot2(void)
     {
         return analogRead(0);
     }
 
-    uint16_t analogRead4a20_1(void)
+    int16_t analogRead4a20_1(void)
     {
         return analogRead(3);
     }
 
-    uint16_t analogRead4a20_2(void)
+    int16_t analogRead4a20_2(void)
     {
         return analogRead(2);
     }    

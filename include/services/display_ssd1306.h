@@ -86,17 +86,27 @@ bool Display_SSD1306::begin(const uint8_t &SDA, const uint8_t &SCL) {
 }
 
 void Display_SSD1306::update(void) {
-    if (ui8_lineSize[0] > 10 || ui8_lineSize[1] > 10 || ui8_lineSize[2] > 10 || isChanged) {
-        isChanged = false;
-        SSD1306.clearDisplay();
-        SSD1306.setTextWrap(false);
-        SSD1306.setTextColor(SSD1306_WHITE);
-        SSD1306.cp437(true);
-        rotaty(0);
-        rotaty(1);
-        rotaty(2);
-        SSD1306.display();
+    const bool hasScrollingText = ui8_lineSize[0] > 10 || ui8_lineSize[1] > 10 || ui8_lineSize[2] > 10;
+    static uint32_t lastScrollMs = 0;
+    const uint32_t now = millis();
+
+    if (!isChanged && (!hasScrollingText || now - lastScrollMs < 100)) {
+        return;
     }
+
+    if (hasScrollingText) {
+        lastScrollMs = now;
+    }
+
+    isChanged = false;
+    SSD1306.clearDisplay();
+    SSD1306.setTextWrap(false);
+    SSD1306.setTextColor(SSD1306_WHITE);
+    SSD1306.cp437(true);
+    rotaty(0);
+    rotaty(1);
+    rotaty(2);
+    SSD1306.display();
 }
 
 void Display_SSD1306::rotaty(uint8_t index) {
@@ -123,11 +133,16 @@ void Display_SSD1306::rotaty(uint8_t index) {
 }
 
 void Display_SSD1306::setText(uint8_t line, const char txt[], bool funcMode, uint8_t txtSize) {
+    if (line < 1 || line > 3) {
+        return;
+    }
     if (this->isFuncMode == funcMode) {
-        strcpy(ca_lineTxt[line - 1], txt);
-        ui8_lineSize[line - 1] = strlen(ca_lineTxt[line - 1]);
-        i16_lineMinWidth[line - 1] = -12 * (ui8_lineSize[line - 1] - 9);
-        ui8_txtSize[line - 1] = txtSize;
+        const uint8_t index = line - 1;
+        strncpy(ca_lineTxt[index], txt ? txt : "", sizeof(ca_lineTxt[index]) - 1);
+        ca_lineTxt[index][sizeof(ca_lineTxt[index]) - 1] = '\0';
+        ui8_lineSize[index] = strlen(ca_lineTxt[index]);
+        i16_lineMinWidth[index] = -12 * (ui8_lineSize[index] - 9);
+        ui8_txtSize[index] = txtSize;
         isChanged = true;
     }
     update();

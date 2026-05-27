@@ -19,6 +19,7 @@ private:
     bool        _udpLinked      = false;
     uint32_t    _base_ms        = 0;
     AsyncUDP    _udp;
+    String      _serialLine;
     std::function<void(std::string)> _onInput;
 
     void _send(const String &txt) {
@@ -103,9 +104,21 @@ public:
                 _startListen();
             }
         }
-        if (Serial.available()) {
-            String linha = Serial.readStringUntil('\n');
-            if (_onInput) _onInput(linha.c_str());
+        while (Serial.available()) {
+            const char c = (char)Serial.read();
+            if (c == '\r') {
+                continue;
+            }
+            if (c == '\n') {
+                if (_onInput) _onInput(_serialLine.c_str());
+                _serialLine = "";
+                continue;
+            }
+            if (_serialLine.length() < 120) {
+                _serialLine += c;
+            } else {
+                _serialLine = "";
+            }
         }
     }
 
