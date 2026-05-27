@@ -17,8 +17,7 @@
  *
  *   void loop() {
  *       board.tick();  // chame a cada ~1 ms para debounce
- *       if (board.push_1.pressed()) { ... }
- *       if (board.rtn_1.held())     { ... }
+ *       board.push_1.tick([](lasecDebounce::Event event) { ... });
  *   }
  */
 
