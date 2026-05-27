@@ -3,7 +3,7 @@
 
 /**
  * @file lasecDebounce.h
- * @brief Debounce simples por integrador.
+ * @brief Debounce simples baseado em tempo.
  *
  * Uso:
  *   lasecDebounce btn;
@@ -36,26 +36,29 @@ public:
         _pin         = pin;
         _activeLevel = activeLevel;
         _window      = (windowMs < 2) ? 2 : windowMs;
-        _integrator  = 0;
-        _stableState = false;
         pinMode(_pin, mode);
+
+        _lastRawState = isActive();
+        _stableState  = _lastRawState;
+        _lastChangeMs = millis();
     }
 
     Event tick()
     {
-        if (digitalRead(_pin) == _activeLevel) {
-            if (_integrator < _window) ++_integrator;
-        } else {
-            if (_integrator > 0) --_integrator;
+        const bool rawState = isActive();
+        const uint32_t now = millis();
+
+        if (rawState != _lastRawState) {
+            _lastRawState = rawState;
+            _lastChangeMs = now;
         }
 
-        if (!_stableState && _integrator >= _window) {
-            _stableState = true;
-            return Pressed;
-        }
+        if (rawState != _stableState && (now - _lastChangeMs) >= _window) {
+            _stableState = rawState;
 
-        if (_stableState && _integrator == 0) {
-            _stableState = false;
+            if (_stableState) {
+                return Pressed;
+            }
             return Released;
         }
 
@@ -72,9 +75,15 @@ public:
     }
 
 private:
-    uint8_t _pin         = 0;
-    uint8_t _activeLevel = LOW;
-    uint8_t _window      = 20;
-    uint8_t _integrator  = 0;
-    bool    _stableState = false;
+    bool isActive() const
+    {
+        return digitalRead(_pin) == _activeLevel;
+    }
+
+    uint8_t  _pin          = 0;
+    uint8_t  _activeLevel  = LOW;
+    uint8_t  _window       = 20;
+    bool     _lastRawState = false;
+    bool     _stableState  = false;
+    uint32_t _lastChangeMs = 0;
 };

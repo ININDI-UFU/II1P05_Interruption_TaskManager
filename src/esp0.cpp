@@ -75,28 +75,34 @@ void setup()
   pinMode(def_pin_D2, OUTPUT);  
   pinMode(def_pin_D3, OUTPUT);
   pinMode(def_pin_D4, OUTPUT);
+  
+  digitalWrite(def_pin_D3, LOW);
+  digitalWrite(def_pin_D4, LOW);
 
-  push1.begin(def_pin_PUSH1, INPUT_PULLUP, LOW, 20);
-  push2.begin(def_pin_PUSH2, INPUT_PULLUP, LOW, 20);
-  rtn1.begin(def_pin_RTN1, INPUT_PULLUP, LOW, 20);
-  rtn2.begin(def_pin_RTN2, INPUT_PULLUP, LOW, 20);
+  push1.begin(def_pin_PUSH1, INPUT, HIGH, 20);
+  push2.begin(def_pin_PUSH2, INPUT_PULLDOWN, HIGH, 20);
+  rtn1.begin(def_pin_RTN1, INPUT_PULLDOWN, HIGH, 20);
+  rtn2.begin(def_pin_RTN2, INPUT, HIGH, 20);
 
   delay(50);  
 }
 
 void loop()
 {
+  net.update();
   wserial.update();
   disp.update();
-  net.update();
 
   push1.tick([](lasecDebounce::Event event) {
     if (event == lasecDebounce::Pressed) {
       digitalWrite(def_pin_D3, HIGH);
+      wserial.println("push1 pressed -> D3 HIGH");
     } else if (event == lasecDebounce::Released) {
       digitalWrite(def_pin_D3, LOW);
+      wserial.println("push1 released -> D3 LOW");
     }
   });
+
   push2.tick([](lasecDebounce::Event event) {
     if (event == lasecDebounce::Held) {
       static uint32_t previousBlinkMS = 0;
