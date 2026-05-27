@@ -108,6 +108,13 @@ void loop()
   push2.tick([](lasecDebounce::Event event) {
     if (event == lasecDebounce::Held) {
       blinkLEDFunc(def_pin_D4);
+      // const uint64_t now = millis();
+      // static uint64_t t1 = 0;
+      // if ((now - t1) >= 1500)
+      // {
+      //   t1 = now;
+      //   blinkLEDFunc(def_pin_D4);
+      // }
     } else if (event == lasecDebounce::Released) {
       digitalWrite(def_pin_D4, LOW);
     }
@@ -115,26 +122,26 @@ void loop()
   rtn1.tick([](lasecDebounce::Event event) { managerDebounceFunc("rtn1", event); });
   rtn2.tick([](lasecDebounce::Event event) { managerDebounceFunc("rtn2", event); });
 
-  const uint64_t currentTimeMS = millis();
+  const uint64_t now = millis();
 
-  static uint64_t previousTimeMS1 = 0;
-  if ((currentTimeMS - previousTimeMS1) >= 1500)
+  static uint64_t t1 = 0;
+  if ((now - t1) >= 1500)
   {
-    previousTimeMS1 = currentTimeMS;
+    t1 = now;
     blinkLEDFunc(def_pin_D1);
   }
 
-  static uint64_t previousTimeMS2 = 0;
-  if ((currentTimeMS - previousTimeMS2) >= 1000)
+  static uint64_t t2 = 0;
+  if ((now - t2) >= 1000)
   {
-    previousTimeMS2 = currentTimeMS;
+    t2 = now;
     blinkLEDFunc(def_pin_D2);
   }
 
-  static uint64_t previousTimeMS3 = 0;  
-  if ((currentTimeMS - previousTimeMS3) >= 500)
+  static uint64_t t3 = 0;  
+  if ((now - t3) >= 500)
   {
-    previousTimeMS3 = currentTimeMS;
+    t3 = now;
     managerInputFunc();
   } 
 }

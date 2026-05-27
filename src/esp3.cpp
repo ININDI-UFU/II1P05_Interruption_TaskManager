@@ -38,9 +38,10 @@ void loop() {
   wserial.update();
   disp.update();
 
-  static uint32_t t = 0;
-  if (millis() - t >= 500) {
-    t = millis();
+  const uint64_t now = millis();
+  static uint64_t t = 0;
+  if (now - t >= 500) {
+    t = now;
     managerInputFunc();
   }
 }
